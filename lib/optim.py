@@ -45,7 +45,8 @@ class SGD(Optimizer):
             #############################################################################
             # TODO: Implement the SGD with (optional) Weight Decay                      #
             #############################################################################
-            pass
+            layer.params[n] *= (1 - self.weight_decay)
+            layer.params[n] -= self.lr * dv
             #############################################################################
             #                             END OF YOUR CODE                              #
             #############################################################################
@@ -68,7 +69,14 @@ class Adam(Optimizer):
         #############################################################################
         # TODO: Implement the Adam with [optinal] Weight Decay                      #
         #############################################################################
-        pass
+        for n, dv in layer.grads.items():
+            self.t += 1
+            self.mt[n] = self.beta1 * (self.mt[n] if n in self.mt else 0) + (1-self.beta1) * dv
+            self.vt[n] = self.beta2 * (self.vt[n] if n in self.vt else 0) + (1-self.beta2) * (dv ** 2)
+            mt_norm = self.mt[n] / (1-np.power(self.beta1, self.t))
+            vt_norm = self.vt[n] / (1-np.power(self.beta2, self.t))
+            layer.params[n] -= self.lr * mt_norm / (np.sqrt(vt_norm) + self.eps)
+            layer.params[n] *= (1 - self.weight_decay)
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################

@@ -129,7 +129,11 @@ class ConvLayer2D(object):
         # TODO: Implement the calculation to find the output size given the         #
         # parameters of this convolutional layer.                                   #
         #############################################################################
-        pass
+        batch_size, in_height, in_width, in_channels = input_size
+        out_height = (in_height + self.padding * 2 - self.kernel_size//2) // self.stride
+        out_width = (in_width + self.padding * 2 - self.kernel_size//2) // self.stride
+        out_channels = self.number_filters
+        output_shape = (batch_size, out_height, out_width, out_channels)
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################

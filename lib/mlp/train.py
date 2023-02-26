@@ -153,7 +153,15 @@ def train_net(data, model, loss_func, optimizer, batch_size, max_epochs,
             # Notice: In backward pass, you should enable regularization.               #
             # Store the loss to loss_hist                                               #
             #############################################################################
-            
+            loss = loss_func.forward(model.forward(data_batch), labels_batch)
+            if regularization == 'L1':
+                loss += reg_lambda * sum([np.sum(np.abs(i)) for i in model.net.params])
+            if regularization == 'L2':
+                loss += reg_lambda * sum([np.sum(np.power(i,2)) for i in model.net.params])
+            dLoss = loss_func.backward()
+            model.backward(dLoss)
+            optimizer.step()
+            loss_hist.append(loss)
             #############################################################################
             #                             END OF YOUR CODE                              #
             #############################################################################
@@ -172,7 +180,8 @@ def train_net(data, model, loss_func, optimizer, batch_size, max_epochs,
         # compute_acc method, store the results to train_acc and val_acc,           #
         # respectively                                                              #
         #############################################################################
-        
+        train_acc = compute_acc(model, data_train, labels_train)
+        val_acc = compute_acc(model, data_val, labels_val)
         #############################################################################
         #                             END OF YOUR CODE                              #
         #############################################################################
@@ -185,7 +194,8 @@ def train_net(data, model, loss_func, optimizer, batch_size, max_epochs,
             # TODO: Save the optimal parameters to opt_params variable by name using    #
             # model.net.gather_params method                                            #
             #############################################################################
-            pass
+            model.net.gather_params()
+            opt_params = model.net.params
             #############################################################################
             #                             END OF YOUR CODE                              #
             #############################################################################
